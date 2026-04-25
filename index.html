@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Iteration assessment</title>
+
+<link rel="icon" href="favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+html, body {
+    margin:0;
+    padding:0;
+    height:100%;
+    font-family:'Outfit', sans-serif;
+    background:#f2f1e8;
+    color:#232323;
+    font-size:clamp(14px,1.2vw,22px);
+}
+
+.wrapper {
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.container {
+    width:90%;
+    max-width:1000px;
+}
+
+.card {
+    display:none;
+    background:#77a766;
+    color:#f9f9fa;
+    padding:2rem;
+    border-radius:1rem;
+}
+
+.active { display:block; }
+
+.question {
+    font-size:1.6rem;
+    margin-bottom:1rem;
+}
+
+.options label {
+    display:block;
+    padding:0.6rem;
+    margin:0.4rem 0;
+    border-radius:0.5rem;
+    cursor:pointer;
+    background:rgba(255,255,255,0.1);
+}
+
+.correct { background:#318ec3 !important; }
+.wrong { background:#724b9e !important; }
+
+input[type="text"] {
+    width:100%;
+    padding:0.6rem;
+    border-radius:0.5rem;
+    border:none;
+    margin-top:0.5rem;
+}
+
+.feedback {
+    margin-top:0.8rem;
+    font-weight:500;
+}
+
+button {
+    margin-top:1rem;
+    background:#e8d227;
+    color:#232323;
+    border:none;
+    padding:0.6rem 1.2rem;
+    border-radius:0.5rem;
+    cursor:pointer;
+}
+
+.logo {
+    position:absolute;
+    top:1rem;
+    right:1rem;
+}
+
+.logo img {
+    height:clamp(30px,4vw,60px);
+}
+
+footer {
+    position:fixed;
+    bottom:0;
+    width:100%;
+    text-align:center;
+    padding:0.5rem;
+}
+</style>
+</head>
+
+<body>
+
+<div class="logo">
+<img src="LOGO.png">
+</div>
+
+<div class="wrapper">
+<div class="container">
+
+<!-- Q1 -->
+<div class="card active" id="q1">
+<div class="question">What is iteration?</div>
+<input type="text" id="a1">
+<button onclick="checkTextFlexible('a1',['repeat','steps'])">Check</button>
+<div class="feedback" id="fb1"></div>
+<button onclick="next('q1','q2')">Next</button>
+</div>
+
+<!-- Q2 -->
+<div class="card" id="q2">
+<div class="question">Which best describes a count-controlled loop?</div>
+<div class="options">
+<label onclick="checkMCQ(this,false,'q2')">Runs forever</label>
+<label onclick="checkMCQ(this,true,'q2')">Runs a fixed number of times</label>
+<label onclick="checkMCQ(this,false,'q2')">Runs randomly</label>
+</div>
+<div class="feedback" id="fb2"></div>
+<button onclick="next('q2','q3')">Next</button>
+</div>
+
+<!-- Q3 -->
+<div class="card" id="q3">
+<div class="question">What determines how the loop variable changes during each iteration in a FOR loop (START, END or STEP)?</div>
+<input type="text" id="a3">
+<button onclick="checkText('a3',['step'])">Check</button>
+<div class="feedback" id="fb3"></div>
+<button onclick="next('q3','q4')">Next</button>
+</div>
+
+<!-- Q4 -->
+<div class="card" id="q4">
+<div class="question">What will be printed?</div>
+<div style="background:#f9f9fa;color:#232323;padding:0.5rem;border-radius:0.5rem;">
+FOR count ← 1 TO 3<br>PRINT(count)<br>NEXT count
+</div>
+<input type="text" id="a4">
+<button onclick="checkSequence('a4',[1,2,3])">Check</button>
+<div class="feedback" id="fb4"></div>
+<button onclick="next('q4','q5')">Next</button>
+</div>
+
+<!-- Q5 -->
+<div class="card" id="q5">
+<div class="question">What will this loop print?</div>
+<div style="background:#f9f9fa;color:#232323;padding:0.5rem;border-radius:0.5rem;">
+FOR count ← 2 TO 10 STEP 2
+</div>
+<div class="options">
+<label onclick="checkMCQ(this,true,'q5')">2 4 6 8 10</label>
+<label onclick="checkMCQ(this,false,'q5')">1 2 3 4</label>
+<label onclick="checkMCQ(this,false,'q5')">10 8 6</label>
+</div>
+<div class="feedback" id="fb5"></div>
+<button onclick="next('q5','q6')">Next</button>
+</div>
+
+<!-- Q6 -->
+<div class="card" id="q6">
+<div class="question">What does a negative step value do?</div>
+<input type="text" id="a6">
+<button onclick="checkTextFlexible('a6',['reverse','decrease','back'])">Check</button>
+<div class="feedback" id="fb6"></div>
+<button onclick="next('q6','result')">Finish</button>
+</div>
+
+<!-- Result -->
+<div class="card" id="result">
+<div class="question" id="score"></div>
+</div>
+
+</div>
+</div>
+
+<footer>©CuriousEd.ai</footer>
+
+<script>
+let score = 0;
+let answered = {};
+
+function checkTextFlexible(id, keywords){
+    let input = document.getElementById(id).value.toLowerCase();
+    let fb = document.getElementById("fb"+id.slice(1));
+
+    let match = keywords.some(k => input.includes(k));
+
+    if(match){
+        if(!answered[id]){
+            score++;
+            answered[id] = true;
+        }
+        fb.innerText = "Correct";
+        fb.style.color = "#e8d227";
+    } else {
+        fb.innerText = "Try again";
+        fb.style.color = "#d9534f";
+    }
+}
+
+function checkText(id, keywords){
+    let input = document.getElementById(id).value.toLowerCase();
+    let fb = document.getElementById("fb"+id.slice(1));
+
+    let correct = keywords.every(k => input.includes(k));
+
+    if(correct){
+        if(!answered[id]){
+            score++;
+            answered[id] = true;
+        }
+        fb.innerText = "Correct";
+        fb.style.color = "#e8d227";
+    } else {
+        fb.innerText = "Try again";
+        fb.style.color = "#d9534f";
+    }
+}
+
+function checkSequence(id, correctSeq){
+    let input = document.getElementById(id).value;
+    let fb = document.getElementById("fb"+id.slice(1));
+
+    let nums = input.match(/\d+/g);
+    if(!nums){
+        fb.innerText = "Try again";
+        fb.style.color = "#d9534f";
+        return;
+    }
+
+    nums = nums.map(Number);
+
+    let correct = nums.length === correctSeq.length &&
+                  nums.every((n,i)=> n === correctSeq[i]);
+
+    if(correct){
+        if(!answered[id]){
+            score++;
+            answered[id] = true;
+        }
+        fb.innerText = "Correct";
+        fb.style.color = "#e8d227";
+    } else {
+        fb.innerText = "Try again";
+        fb.style.color = "#d9534f";
+    }
+}
+
+function checkMCQ(el, isCorrect, qid){
+    let fb = document.getElementById("fb"+qid.slice(1));
+
+    if(answered[qid]) return;
+
+    if(isCorrect){
+        el.classList.add("correct");
+        fb.innerText = "Correct";
+        fb.style.color = "#e8d227";
+        score++;
+        answered[qid] = true;
+
+        let labels = el.parentElement.querySelectorAll("label");
+        labels.forEach(l => l.onclick = null);
+    } else {
+        el.classList.add("wrong");
+        fb.innerText = "Try again";
+        fb.style.color = "#d9534f";
+    }
+}
+
+function next(current,next){
+    document.getElementById(current).classList.remove("active");
+    document.getElementById(next).classList.add("active");
+
+    if(next==="result"){
+        document.getElementById("score").innerText = "Score: "+score+" out of 6";
+    }
+}
+</script>
+
+</body>
+</html>
